@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dutmdcjf.authserver.dto.mapper.UserMapper">
+    <select id="getUserBySignIn" parameterType="String" resultType="HashMap">
+        SELECT * FROM user
+        WHERE email = #{email} and password = #{password}
+    </select>
+
+    <select id="getUserById" parameterType="String" resultType="User">
+        SELECT * FROM user
+        WHERE idx = #{idx}
+    </select>
+</mapper>
