@@ -1,8 +1,10 @@
 package com.dutmdcjf.authserver.service;
 
+import com.dutmdcjf.authserver.common.StringDefiner;
 import com.dutmdcjf.authserver.dto.mapper.UserMapper;
 import com.dutmdcjf.authserver.jwt.AuthToken;
 import com.dutmdcjf.authserver.jwt.JwtProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +22,12 @@ public class UserService {
     @Value("${jwt.refreshToken.exp}")
     private String refreshTokenExp;
     @Value("${spring.redis.exp}")
-    private Long exp;
+    private Long redisExp;
 
     private final UserMapper userMapper;
     private final JwtProvider jwtProvider;
+    private final RedisService redisService;
+    private final ObjectMapper objectMapper;
 
 
     /*
@@ -31,7 +35,6 @@ public class UserService {
      * */
     public AuthToken userSignIn(String email, String password) throws Exception {
         Map<String, Object> userSignInData;
-
         userSignInData = userMapper.getUserBySignIn(email, password);
         if (userSignInData == null) {
             throw new Exception();
@@ -40,6 +43,10 @@ public class UserService {
         String userId = String.valueOf(userSignInData.get("idx"));
         String accessToken = jwtProvider.createToken(userId, accessTokenExp);
         String refreshToken = jwtProvider.createToken(userId, refreshTokenExp);
+
+        String redisId = StringDefiner.REDIS_ID_PREFIX + userId;
+        String redisAuthToken = objectMapper.writeValueAsString(new AuthToken(accessToken, refreshToken));
+        redisService.setValues(redisId, redisAuthToken, redisExp);
 
         return new AuthToken(accessToken, refreshToken);
     }
