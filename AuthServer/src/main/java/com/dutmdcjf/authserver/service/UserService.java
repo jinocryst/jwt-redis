@@ -11,9 +11,13 @@ import java.util.Map;
 public class UserService {
     private final UserMapper userMapper;
 
-    public Map<String, Object> userSignIn(String email, String password) {
+    public Map<String, Object> userSignIn(String email, String password) throws Exception {
         Map<String, Object> userSignInData;
+
         userSignInData = userMapper.getUserBySignIn(email, password);
+        if(userSignInData == null){
+            throw new Exception();
+        }
 
         return userSignInData;
     }

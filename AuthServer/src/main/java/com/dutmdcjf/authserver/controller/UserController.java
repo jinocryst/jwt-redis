@@ -13,8 +13,11 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping ("/test")
-    public Map<String, Object> test(@RequestBody User user) {
+    @PostMapping("/signIn")
+    public Map<String, Object> signIn(@RequestBody User user) throws Exception {
+        if (user == null || user.getEmail() == null || user.getPassword() == null) {
+            throw new Exception();
+        }
         return userService.userSignIn(user.getEmail(), user.getPassword());
     }
 }
