@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import javax.sound.midi.SysexMessage;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -49,5 +50,12 @@ public class JwtProvider {
                 .compact();
 
         return token;
+    }
+
+    public String getHeaderToken(HttpServletRequest request) {
+        if (request.getHeader("Authorization") != null) {
+            return request.getHeader("Authorization").substring(7);
+        }
+        return null;
     }
 }
