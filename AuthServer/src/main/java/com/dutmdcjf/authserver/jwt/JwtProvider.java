@@ -37,12 +37,17 @@ public class JwtProvider {
         headers.put("typ", "JWT");
         headers.put("alg", "HS256");
 
+        Map<String, Object> payloads = new HashMap<>();
+        payloads.put("userId", id);
+
+        String email = userMapper.getUserById(id).getEmail();
         String username = userMapper.getUserById(id).getUsername();
 
         String token = Jwts.builder()
                 .setHeader(headers)
+                .setClaims(payloads)
                 .setIssuer("dutmdcjf")  //발급자
-                .setSubject(id)         //토큰 제목 - 토큰 식별자
+                .setSubject(email)         //토큰 제목 - 토큰 식별자
                 .setAudience(username)  //토큰 대상자
                 .setIssuedAt(new Date(System.currentTimeMillis()))                       //토큰 발급 시간
                 .setExpiration(new Date(System.currentTimeMillis() + Long.valueOf(exp))) //토큰 만료 시간
@@ -59,11 +64,16 @@ public class JwtProvider {
         return null;
     }
 
-    private String getSubject(String token) {
+    public String getUserId(String token) {
+        System.out.println("값: " + getClaimsToken(token).get("userId", String.class));
+        return getClaimsToken(token).get("userId", String.class);
+    }
+
+    public String getSubject(String token) {
         return getClaimsToken(token).getSubject();
     }
 
-    private boolean isValidToken(String token) {
+    public boolean isValidToken(String token) {
         return getClaimsToken(token).getExpiration().after(new Date());
     }
 
