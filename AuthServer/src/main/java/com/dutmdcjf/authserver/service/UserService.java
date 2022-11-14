@@ -24,6 +24,10 @@ public class UserService {
     private final UserMapper userMapper;
     private final JwtProvider jwtProvider;
 
+
+    /*
+     * SingIn
+     * */
     public AuthToken userSignIn(String email, String password) throws Exception {
         Map<String, Object> userSignInData;
 
@@ -39,6 +43,9 @@ public class UserService {
         return new AuthToken(accessToken, refreshToken);
     }
 
+    /*
+     * refresh
+     * */
     public AuthToken refresh(AuthToken authToken) throws Exception {
         String newAccessToken = null;
 
