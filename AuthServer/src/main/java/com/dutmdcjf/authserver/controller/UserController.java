@@ -1,6 +1,7 @@
 package com.dutmdcjf.authserver.controller;
 
 import com.dutmdcjf.authserver.dto.User;
+import com.dutmdcjf.authserver.jwt.AuthToken;
 import com.dutmdcjf.authserver.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signIn")
-    public Map<String, Object> signIn(@RequestBody User user) throws Exception {
+    public AuthToken signIn(@RequestBody User user) throws Exception {
         if (user == null || user.getEmail() == null || user.getPassword() == null) {
             throw new Exception();
         }
