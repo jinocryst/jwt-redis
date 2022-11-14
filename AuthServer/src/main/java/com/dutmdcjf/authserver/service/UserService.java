@@ -61,11 +61,30 @@ public class UserService {
             if (!jwtProvider.isValidToken(authToken.getRefreshToken())) {
                 log.info("refreshToken의 유효기간이 만료됨");
             }
+
             String userId = jwtProvider.getUserId(authToken.getRefreshToken());
+            String redisId = StringDefiner.REDIS_ID_PREFIX + userId;
+            String redisAuthToken = String.valueOf(redisService.getValues(redisId));
+
+            if (redisAuthToken == null) {
+                throw new Exception();
+            }
+
+            String redisRefreshToken = objectMapper.readValue(redisAuthToken, AuthToken.class).getRefreshToken();
+
+            if (!redisRefreshToken.equals(authToken.getRefreshToken())) {
+                log.info("refreshToken이 다르므로, 재발급하지 않고 거절 응답");
+                throw new Exception();
+            }
+
             newAccessToken = jwtProvider.createToken(userId, accessTokenExp);
+            String newRedisAuthToken = objectMapper.writeValueAsString(new AuthToken(newAccessToken, authToken.getRefreshToken()));
+            redisService.setValues(redisId, newRedisAuthToken, redisExp);
+
         } catch (ExpiredJwtException e) {
             log.warn(e.getMessage());
         }
+
         return new AuthToken(newAccessToken, null);
     }
 }
