@@ -1,6 +1,7 @@
 package com.dutmdcjf.authserver.jwt;
 
 import com.dutmdcjf.authserver.dto.mapper.UserMapper;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -57,5 +58,21 @@ public class JwtProvider {
             return request.getHeader("Authorization").substring(7);
         }
         return null;
+    }
+
+    private String getSubject(String token) {
+        return getClaimsToken(token).getSubject();
+    }
+    
+    private boolean isValidToken(String token) {
+        return getClaimsToken(token).getExpiration().after(new Date());
+    }
+
+    private Claims getClaimsToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(securityKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
