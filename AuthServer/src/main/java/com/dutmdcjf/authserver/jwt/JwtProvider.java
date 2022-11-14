@@ -63,7 +63,7 @@ public class JwtProvider {
     private String getSubject(String token) {
         return getClaimsToken(token).getSubject();
     }
-    
+
     private boolean isValidToken(String token) {
         return getClaimsToken(token).getExpiration().after(new Date());
     }
