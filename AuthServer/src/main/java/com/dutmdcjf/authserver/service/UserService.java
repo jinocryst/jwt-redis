@@ -17,9 +17,10 @@ import java.util.Map;
 public class UserService {
     @Value("${jwt.accessToken.exp}")
     private String accessTokenExp;
-
     @Value("${jwt.refreshToken.exp}")
     private String refreshTokenExp;
+    @Value("${spring.redis.exp}")
+    private Long exp;
 
     private final UserMapper userMapper;
     private final JwtProvider jwtProvider;
